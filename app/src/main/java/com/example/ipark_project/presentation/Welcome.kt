@@ -65,7 +65,7 @@ fun Welcome(navController: NavController){
                         navController.navigate(Router.RegisterScreen.route)
                     },
                     contentAlignment = Alignment.Center){
-                 Text(text = "Sign Up", fontSize = 25.sp, color = Color.White)
+                    Text(text = "Sign Up", fontSize = 25.sp, color = Color.White)
                 }
                 Row (
                     modifier = Modifier.fillMaxWidth(),

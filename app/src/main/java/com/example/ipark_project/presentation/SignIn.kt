@@ -22,7 +22,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
@@ -114,11 +113,15 @@ private fun saveTokenToSharedPreferences(token: String, context: Context) {
     // Edit SharedPreferences to store token
     val editor = sharedPreferences.edit()
     editor.putString("token", token)
+    editor.putBoolean("isConnected",true)
     editor.apply()
 }
 
 @Composable
-fun SignIn(navController: NavController, signInUserViewModel: SignInUserViewModel){
+fun SignIn(
+    navController: NavController, signInUserViewModel: SignInUserViewModel,
+    isConnected: MutableState<Boolean>
+){
     var username = remember { mutableStateOf("") }
     var password = remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -134,6 +137,8 @@ fun SignIn(navController: NavController, signInUserViewModel: SignInUserViewMode
         signInUserViewModel.signInResponse.value?.let { saveTokenToSharedPreferences(it.token, context) }
         username.value = ""
         password.value = ""
+        isConnected.value=true
+        navController.navigate(Router.HomeScreen.route)
     }
 
     Column(

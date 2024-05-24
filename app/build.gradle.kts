@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id ("kotlin-parcelize")
+
 }
 
 android {
@@ -78,4 +80,16 @@ dependencies {
     testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.2")
     //MockWebserver
     testImplementation ("com.squareup.okhttp3:mockwebserver:4.9.1")
+    //
+    implementation ("io.github.vanpra.compose-material-dialogs:datetime:0.8.1-rc")
+    coreLibraryDesugaring ("com.android.tools:desugar_jdk_libs:1.1.6")
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.28.0")
+    implementation ("io.coil-kt:coil-compose:2.2.2")
+    implementation ("androidx.appcompat:appcompat:1.6.1")
+    implementation ("androidx.appcompat:appcompat-resources:1.6.1")
+
+    implementation ("com.google.android.gms:play-services-maps:18.0.2")
+    implementation ("com.google.maps.android:maps-compose:1.1.0")
+//
+    implementation ("org.jetbrains.kotlin:kotlin-parcelize-runtime:1.4.10")
 }

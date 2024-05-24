@@ -28,7 +28,7 @@ data class SignInResponse(
 )
 
 
-interface AuthEndpoint {
+interface AuthEndpoint : ParkingsEndpoints {
 
     @POST("api/users/signup/")
     suspend fun signUp(
