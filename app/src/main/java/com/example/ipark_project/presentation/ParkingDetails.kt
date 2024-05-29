@@ -24,6 +24,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,6 +49,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.ipark_project.buisiness.URL
 import com.example.ipark_project.buisiness.entities.Parking
@@ -360,7 +362,9 @@ fun searchParkingsForm(){
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun parkingDetails(
-   parking: Parking?
+   parking: Parking?,
+   navController: NavController
+
 ) {
     var sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -376,6 +380,7 @@ fun parkingDetails(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         item {
             Box(
                 modifier = Modifier
@@ -387,9 +392,9 @@ fun parkingDetails(
                         state = pagerState,
                         key = { parking.images[it] }
                     ) { index ->
-                        println("http://192.168.43.189:8000"+parking.images[index].imgFile)
+                        println("http://192.168.48.203:8000"+parking.images[index].imgFile)
                         AsyncImage(
-                            model = "http://192.168.43.189:8000"+parking.images[index].imgFile,
+                            model = URL+parking.images[index].imgFile,
                             contentScale = ContentScale.Crop,
                             contentDescription = "parking photos",
                             modifier = Modifier.fillMaxSize()
@@ -398,7 +403,6 @@ fun parkingDetails(
                 }
             }
         }
-
         item {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,

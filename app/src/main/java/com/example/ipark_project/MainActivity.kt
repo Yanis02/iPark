@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.BottomAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
@@ -46,6 +47,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.ipark_project.buisiness.entities.Parking
 import com.example.ipark_project.buisiness.viewmodels.ParkingsViewModel
 import com.google.gson.Gson
@@ -64,6 +66,7 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContent {
             IPark_ProjectTheme {
@@ -78,67 +81,76 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
 }
 
-@Composable
-fun navigationBar(navController: NavController) {
-    Row (modifier = Modifier
-        .padding(10.dp)
-        .background(Color(0xFFEBEFF5))) {
-
-
-        BottomNavigation(
+    @Composable
+    fun navigationBar(navController: NavController) {
+        Row(
             modifier = Modifier
-                .clip(shape = RoundedCornerShape(20.dp))
-                .height(70.dp)
-            ,
-            backgroundColor = Color.White,
+                .padding(10.dp)
+                .background(Color(0xFFEBEFF5))
         ) {
-            val currentRoute = navController.currentDestination?.route
+            BottomAppBar(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(20.dp))
+                    .height(70.dp),
+                backgroundColor = Color.White,
+            ) {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = navBackStackEntry?.destination?.route
+                val selectedColor = Color(0xFFD52D2D)
+                val defaultColor = Color.Gray
 
-            BottomNavigationItem(
-                selected = currentRoute == Router.HomeScreen.route,
-                onClick = { navController.navigate(Router.HomeScreen.route) },
-                icon = {
-                    Icon(imageVector = Icons.Filled.Home, contentDescription = "", tint = Color(0xFFD52D2D))
-                })
-            BottomNavigationItem(
-                selected = currentRoute == Router.ReservationsScreen.route,
-                onClick = {
-
-
-                    navController.navigate(Router.ReservationsScreen.route)
-
-                },
-                icon = {
-                    Icon(imageVector = Icons.Filled.ShoppingCart, contentDescription = "", tint = Color(0xFFD52D2D))
-                })
-            BottomNavigationItem(
-                selected = currentRoute == Router.NotificationsScreen.route,
-                onClick = {
-
-
-                    navController.navigate(Router.NotificationsScreen.route)
-
-                },
-                icon = {
-                    Icon(imageVector = Icons.Filled.Notifications, contentDescription = "", tint = Color(0xFFD52D2D))
-                })
-            BottomNavigationItem(
-                selected = currentRoute == Router.ProfileScreen.route,
-                onClick = {
-
-
-                    navController.navigate(Router.ProfileScreen.route)
-
-                },
-                icon = {
-                    Icon(imageVector = Icons.Filled.Person, contentDescription = "", tint = Color(0xFFD52D2D))
-                })
-
+                BottomNavigationItem(
+                    selected = currentRoute == Router.HomeScreen.route,
+                    onClick = { navController.navigate(Router.HomeScreen.route) },
+                    icon = {
+                        println(currentRoute)
+                        println(Router.HomeScreen.route)
+                        Icon(
+                            imageVector = Icons.Filled.Home,
+                            contentDescription = "",
+                            tint = if (currentRoute == Router.HomeScreen.route) selectedColor else defaultColor
+                        )
+                    }
+                )
+                BottomNavigationItem(
+                    selected = currentRoute == Router.ReservationsScreen.route,
+                    onClick = { navController.navigate(Router.ReservationsScreen.route) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.ShoppingCart,
+                            contentDescription = "",
+                            tint = if (currentRoute == Router.ReservationsScreen.route) selectedColor else defaultColor
+                        )
+                    }
+                )
+                BottomNavigationItem(
+                    selected = currentRoute == Router.NotificationsScreen.route,
+                    onClick = { navController.navigate(Router.NotificationsScreen.route) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.Notifications,
+                            contentDescription = "",
+                            tint = if (currentRoute == Router.NotificationsScreen.route) selectedColor else defaultColor
+                        )
+                    }
+                )
+                BottomNavigationItem(
+                    selected = currentRoute == Router.ProfileScreen.route,
+                    onClick = { navController.navigate(Router.ProfileScreen.route) },
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Filled.Person,
+                            contentDescription = "",
+                            tint = if (currentRoute == Router.ProfileScreen.route) selectedColor else defaultColor
+                        )
+                    }
+                )
+            }
         }
     }
-}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @RequiresApi(Build.VERSION_CODES.O)
@@ -157,7 +169,7 @@ fun root() {
         content = { paddingValues ->
             Box(modifier = Modifier
                 .padding(paddingValues)
-                .background(Color(0xFFEBEFF5))) {
+                .background(Color(0xFFE5E5E5))) {
                 NavHost(
                     navController = navController,
                     startDestination = if (isConnected.value) Router.HomeScreen.route else Router.LandingScreen.route
@@ -184,7 +196,7 @@ fun root() {
                     }
                     composable(route = Router.ParkingScreen.route) {
                            val parking= navController.previousBackStackEntry?.savedStateHandle?.get<Parking>("parking")
-                                parkingDetails(parking = parking)
+                                parkingDetails(parking = parking,navController)
 
 
                 }
