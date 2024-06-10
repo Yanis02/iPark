@@ -24,6 +24,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -117,7 +118,7 @@ fun searchParkingsForm(parking: Parking?, navController: NavController, createRe
             modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
-            // Content
+
         }
 
         Text(text = "Entery information", fontSize = 20.sp, color = Color(0xFFD52D2D))
@@ -136,7 +137,6 @@ fun searchParkingsForm(parking: Parking?, navController: NavController, createRe
                 title = "Pick a date"
             ) { pickedEnteryDate = it }
         }
-
         MaterialDialog(
             dialogState = timeEntryDialogState,
             buttons = {
@@ -151,6 +151,7 @@ fun searchParkingsForm(parking: Parking?, navController: NavController, createRe
                 title = "Pick a time"
             ) { pickedEnteryTime = it }
         }
+
 
         Column(
             modifier = Modifier.padding(20.dp),
@@ -176,6 +177,8 @@ fun searchParkingsForm(parking: Parking?, navController: NavController, createRe
                 ) {
                     Text(text = "Pick entery date", fontSize = 15.sp, color = Color.Black)
                 }
+
+
                 Text(text = formattedEnteryDate, modifier = Modifier.width(100.dp))
             }
 
@@ -201,6 +204,7 @@ fun searchParkingsForm(parking: Parking?, navController: NavController, createRe
                 }
                 Text(text = formattedEnteryTime, modifier = Modifier.width(100.dp))
             }
+
         }
 
         Text(text = "Exit information", fontSize = 20.sp, color = Color(0xFFD52D2D))
@@ -219,7 +223,6 @@ fun searchParkingsForm(parking: Parking?, navController: NavController, createRe
                 title = "Pick a date"
             ) { pickedExitDate = it }
         }
-
         MaterialDialog(
             dialogState = timeExitDialogState,
             buttons = {
@@ -259,6 +262,8 @@ fun searchParkingsForm(parking: Parking?, navController: NavController, createRe
                 ) {
                     Text(text = "Pick exit date", fontSize = 15.sp, color = Color.Black)
                 }
+
+
                 Text(text = formattedExitDate, modifier = Modifier.width(100.dp))
             }
 
