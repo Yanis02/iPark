@@ -1,8 +1,11 @@
 package com.example.ipark_project
 
 import android.app.Application
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
 import com.example.ipark_project.buisiness.endpoints.AuthEndpoint
 import com.example.ipark_project.buisiness.endpoints.ParkingsEndpoints
+import com.example.ipark_project.buisiness.endpoints.ReservationEndpoint
 import com.example.ipark_project.buisiness.repositories.ParkingsRepository
 import com.example.ipark_project.buisiness.repositories.UserRepository
 

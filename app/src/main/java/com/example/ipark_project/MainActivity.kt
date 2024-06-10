@@ -48,7 +48,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.ipark_project.buisiness.endpoints.ReservationEndpoint
 import com.example.ipark_project.buisiness.entities.Parking
+import com.example.ipark_project.buisiness.repositories.ReservationRepository
+import com.example.ipark_project.buisiness.resources.AppDatabase
+import com.example.ipark_project.buisiness.viewmodels.CreateReservationViewModel
+import com.example.ipark_project.buisiness.viewmodels.MyBookingViewModel
 import com.example.ipark_project.buisiness.viewmodels.ParkingsViewModel
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -66,7 +71,6 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContent {
             IPark_ProjectTheme {
@@ -81,7 +85,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
 }
 
     @Composable
@@ -165,6 +168,22 @@ fun root() {
     }
     val navController = rememberNavController()
 
+    val token = remember {
+        mutableStateOf(prefs.getString("token", "") ?: "")
+    }
+
+    // Creation of reservation instances
+    val database  = AppDatabase.getInstance(context)
+    val reservationDao = database.getReservationDao()
+    val reservationEndpoint = ReservationEndpoint.create(token.value)
+    val reservationRepository = ReservationRepository(reservationEndpoint, reservationDao)
+    val createReservationViewModel: CreateReservationViewModel by viewModels {
+        CreateReservationViewModel.Factory(reservationRepository)
+    }
+    val myBookingViewModel: MyBookingViewModel by viewModels {
+        MyBookingViewModel.Factory(reservationRepository)
+    }
+
     Scaffold(
         content = { paddingValues ->
             Box(modifier = Modifier
@@ -192,11 +211,15 @@ fun root() {
                         HomePage(navController = navController,parkingsViewModel=parkingsViewModel)
                     }
                     composable(route = Router.ReservationsScreen.route) {
-                        myBookings()
+                        myBookings(myBookingViewModel)
                     }
                     composable(route = Router.ParkingScreen.route) {
                            val parking= navController.previousBackStackEntry?.savedStateHandle?.get<Parking>("parking")
-                                parkingDetails(parking = parking,navController)
+                                parkingDetails(
+                                    parking = parking,
+                                    navController = navController,
+                                    createReservationViewModel = createReservationViewModel
+                                )
 
 
                 }

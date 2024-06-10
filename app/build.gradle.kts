@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id ("kotlin-parcelize")
+    id("com.google.devtools.ksp") version "1.9.21-1.0.15"
 
 }
 
@@ -51,6 +52,7 @@ android {
     }
 }
 
+val room_version = "2.5.0"
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -92,4 +94,10 @@ dependencies {
     implementation ("com.google.maps.android:maps-compose:1.1.0")
 //
     implementation ("org.jetbrains.kotlin:kotlin-parcelize-runtime:1.4.10")
+    // Room
+    implementation ("androidx.room:room-runtime:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.room:room-ktx:$room_version")
+    testImplementation ("androidx.room:room-testing:$room_version")
+
 }

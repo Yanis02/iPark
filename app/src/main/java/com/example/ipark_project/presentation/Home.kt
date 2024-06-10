@@ -82,7 +82,7 @@ fun HomePage(navController: NavController, parkingsViewModel: ParkingsViewModel 
         parkingsViewModel.getParkings()
     }
     val parkings by parkingsViewModel.parkings
-
+    println(parkings)
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -137,7 +137,7 @@ fun HomePage(navController: NavController, parkingsViewModel: ParkingsViewModel 
                 AnimatedVisibility(visible = isMap) {
                     //cameraPositionState = CameraPositionState(position = CameraPosition.fromLatLngZoom(singapore, 10f))
 
-                    filteredParkings?.let { GoogleMapScreen(it, navController) }
+                    parkings?.let { GoogleMapScreen(it, navController) }
 
                 }
                 AnimatedVisibility(visible = !isMap) {

@@ -101,6 +101,7 @@ fun GoogleMapScreen( parkings: List<Parking>,navController: NavController) {
                 selectedParking = null
             }
         ) {
+            println(parkings+"map")
             parkings.forEach { spot ->
                 Marker(
                     position = LatLng(spot.latitude.toDouble(), spot.longitude.toDouble()),

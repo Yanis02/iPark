@@ -53,6 +53,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.ipark_project.buisiness.URL
 import com.example.ipark_project.buisiness.entities.Parking
+import com.example.ipark_project.buisiness.viewmodels.CreateReservationViewModel
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
@@ -63,120 +64,106 @@ import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun searchParkingsForm(){
-    val applicationContext= LocalContext.current
-    var pickedEnteryDate by remember {
-        mutableStateOf(LocalDate.now())
-    }
-    var pickedEnteryTime by remember {
-        mutableStateOf(LocalTime.NOON)
-    }
+fun searchParkingsForm(parking: Parking?, navController: NavController, createReservationViewModel: CreateReservationViewModel) {
+    val applicationContext = LocalContext.current
+    var pickedEnteryDate by remember { mutableStateOf(LocalDate.now()) }
+    var pickedEnteryTime by remember { mutableStateOf(LocalTime.NOON) }
+    var pickedExitDate by remember { mutableStateOf(LocalDate.now()) }
+    var pickedExitTime by remember { mutableStateOf(LocalTime.NOON) }
+
     val formattedEnteryDate by remember {
         derivedStateOf {
-            DateTimeFormatter.ofPattern("MMM dd yyyy")
-                .format(pickedEnteryDate)
+            DateTimeFormatter.ofPattern("yyyy-MM-dd").format(pickedEnteryDate)
         }
     }
     val formattedEnteryTime by remember {
         derivedStateOf {
-            DateTimeFormatter.ofPattern("hh:mm")
-                .format(pickedEnteryTime)
+            DateTimeFormatter.ofPattern("HH:mm:ss").format(pickedEnteryTime)
         }
-    }
-    var pickedExitDate by remember {
-        mutableStateOf(LocalDate.now())
-    }
-    var pickedExitTime by remember {
-        mutableStateOf(LocalTime.NOON)
     }
     val formattedExitDate by remember {
         derivedStateOf {
-            DateTimeFormatter.ofPattern("MMM dd yyyy")
-                .format(pickedExitDate)
+            DateTimeFormatter.ofPattern("yyyy-MM-dd").format(pickedExitDate)
         }
     }
     val formattedExitTime by remember {
         derivedStateOf {
-            DateTimeFormatter.ofPattern("hh:mm")
-                .format(pickedExitTime)
+            DateTimeFormatter.ofPattern("HH:mm:ss").format(pickedExitTime)
         }
     }
+
     val dateEntryDialogState = rememberMaterialDialogState()
     val timeEntryDialogState = rememberMaterialDialogState()
     val dateExitDialogState = rememberMaterialDialogState()
     val timeExitDialogState = rememberMaterialDialogState()
-    Column (
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
 
-        Column (modifier = Modifier.padding(20.dp)
-            ,
+    val context = LocalContext.current
+
+    if (createReservationViewModel.error.value){
+        showToast(createReservationViewModel.errorMessage.value, context)
+        createReservationViewModel.error.value = false
+    }
+
+    if (createReservationViewModel.success.value){
+        showToast("Reservation created", context)
+        createReservationViewModel.success.value = false
+        navController.navigate(Router.ReservationsScreen.route)
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
 
         }
-        Text(text = "Entery information", fontSize = 20.sp,color=Color(0xFFD52D2D))
+
+        Text(text = "Entery information", fontSize = 20.sp, color = Color(0xFFD52D2D))
+
         MaterialDialog(
             dialogState = dateEntryDialogState,
             buttons = {
                 positiveButton(text = "Ok") {
-                    Toast.makeText(
-                        applicationContext,
-                        "Clicked ok",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(applicationContext, "Clicked ok", Toast.LENGTH_LONG).show()
                 }
                 negativeButton(text = "Cancel")
             }
         ) {
             datepicker(
                 initialDate = LocalDate.now(),
-                title = "Pick a date",
-                allowedDateValidator = {
-                    it.dayOfMonth % 2 == 1
-                }
-            ) {
-                pickedEnteryDate = it
-            }
+                title = "Pick a date"
+            ) { pickedEnteryDate = it }
         }
         MaterialDialog(
             dialogState = timeEntryDialogState,
             buttons = {
                 positiveButton(text = "Ok") {
-                    Toast.makeText(
-                        applicationContext,
-                        "Clicked ok",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(applicationContext, "Clicked ok", Toast.LENGTH_LONG).show()
                 }
                 negativeButton(text = "Cancel")
             }
         ) {
             timepicker(
                 initialTime = LocalTime.NOON,
-                title = "Pick a time",
-                timeRange = LocalTime.MIDNIGHT..LocalTime.NOON
-            ) {
-                pickedEnteryTime = it
-            }
+                title = "Pick a time"
+            ) { pickedEnteryTime = it }
         }
 
 
         Column(
-            modifier = Modifier.padding(20.dp)
-            ,
-            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row (
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp)
-                ,
+                    .padding(start = 20.dp, end = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-
-                ){
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 Box(
                     modifier = Modifier
                         .size(150.dp, 60.dp)
@@ -185,9 +172,7 @@ fun searchParkingsForm(){
                             border = BorderStroke(2.dp, Color.Black),
                             shape = RoundedCornerShape(20.dp)
                         )
-                        .clickable {
-                            dateEntryDialogState.show()
-                        },
+                        .clickable { dateEntryDialogState.show() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text = "Pick entery date", fontSize = 15.sp, color = Color.Black)
@@ -197,15 +182,13 @@ fun searchParkingsForm(){
                 Text(text = formattedEnteryDate, modifier = Modifier.width(100.dp))
             }
 
-            Row (
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
-                ,
+                    .padding(20.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-
-                ){
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 Box(
                     modifier = Modifier
                         .size(150.dp, 60.dp)
@@ -214,79 +197,58 @@ fun searchParkingsForm(){
                             border = BorderStroke(2.dp, Color.Black),
                             shape = RoundedCornerShape(16.dp)
                         )
-                        .clickable {
-                            timeEntryDialogState.show()
-                        },
+                        .clickable { timeEntryDialogState.show() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text = "Pick entery time", fontSize = 15.sp, color = Color.Black)
                 }
-
-                Text(text = formattedEnteryTime,modifier = Modifier.width(100.dp))
+                Text(text = formattedEnteryTime, modifier = Modifier.width(100.dp))
             }
 
         }
 
-        Text(text = "Entery information", fontSize = 20.sp,color=Color(0xFFD52D2D))
+        Text(text = "Exit information", fontSize = 20.sp, color = Color(0xFFD52D2D))
+
         MaterialDialog(
             dialogState = dateExitDialogState,
             buttons = {
                 positiveButton(text = "Ok") {
-                    Toast.makeText(
-                        applicationContext,
-                        "Clicked ok",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(applicationContext, "Clicked ok", Toast.LENGTH_LONG).show()
                 }
                 negativeButton(text = "Cancel")
             }
         ) {
             datepicker(
                 initialDate = LocalDate.now(),
-                title = "Pick a date",
-                allowedDateValidator = {
-                    it.dayOfMonth % 2 == 1
-                }
-            ) {
-                pickedExitDate = it
-            }
+                title = "Pick a date"
+            ) { pickedExitDate = it }
         }
         MaterialDialog(
             dialogState = timeExitDialogState,
             buttons = {
                 positiveButton(text = "Ok") {
-                    Toast.makeText(
-                        applicationContext,
-                        "Clicked ok",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(applicationContext, "Clicked ok", Toast.LENGTH_LONG).show()
                 }
                 negativeButton(text = "Cancel")
             }
         ) {
             timepicker(
                 initialTime = LocalTime.NOON,
-                title = "Pick a time",
-                timeRange = LocalTime.MIDNIGHT..LocalTime.NOON
-            ) {
-                pickedExitTime = it
-            }
+                title = "Pick a time"
+            ) { pickedExitTime = it }
         }
 
         Column(
-            modifier = Modifier.padding(20.dp)
-            ,
-            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row (
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp)
-                ,
+                    .padding(start = 20.dp, end = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-
-                ){
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 Box(
                     modifier = Modifier
                         .size(150.dp, 60.dp)
@@ -295,9 +257,7 @@ fun searchParkingsForm(){
                             border = BorderStroke(2.dp, Color.Black),
                             shape = RoundedCornerShape(20.dp)
                         )
-                        .clickable {
-                            dateExitDialogState.show()
-                        },
+                        .clickable { dateExitDialogState.show() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text = "Pick exit date", fontSize = 15.sp, color = Color.Black)
@@ -307,15 +267,13 @@ fun searchParkingsForm(){
                 Text(text = formattedExitDate, modifier = Modifier.width(100.dp))
             }
 
-            Row (
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
-                ,
+                    .padding(20.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceEvenly,
-
-                ){
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 Box(
                     modifier = Modifier
                         .size(150.dp, 60.dp)
@@ -324,38 +282,45 @@ fun searchParkingsForm(){
                             border = BorderStroke(2.dp, Color.Black),
                             shape = RoundedCornerShape(16.dp)
                         )
-                        .clickable {
-                            timeExitDialogState.show()
-                        },
+                        .clickable { timeExitDialogState.show() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(text = "Pick exit time", fontSize = 15.sp, color = Color.Black)
                 }
-
-                Text(text = formattedExitTime,modifier = Modifier.width(100.dp))
+                Text(text = formattedExitTime, modifier = Modifier.width(100.dp))
             }
-
         }
+
         Row(
             modifier = Modifier
                 .size(150.dp, 60.dp)
                 .clip(RoundedCornerShape(20.dp))
                 .background(Color(0xFFD52D2D))
-                ,
+                .clickable {
+
+                    if (parking != null) {
+                        createReservationViewModel.CreateReservation(
+                            parking = parking.id,
+                            entry_date = formattedEnteryDate,
+                            entry_time = formattedEnteryTime,
+                            exit_date = formattedExitDate,
+                            exit_time = formattedExitTime
+                        )
+                    }
+                },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
                 text = "Book Parking",
                 color = Color.White,
-                fontSize = 18.sp,
-
-                )
-
+                fontSize = 18.sp
+            )
         }
     }
-
 }
+
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -363,8 +328,8 @@ fun searchParkingsForm(){
 @Composable
 fun parkingDetails(
    parking: Parking?,
-   navController: NavController
-
+   navController: NavController,
+   createReservationViewModel: CreateReservationViewModel
 ) {
     var sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -380,7 +345,6 @@ fun parkingDetails(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         item {
             Box(
                 modifier = Modifier
@@ -392,7 +356,7 @@ fun parkingDetails(
                         state = pagerState,
                         key = { parking.images[it] }
                     ) { index ->
-                        println("http://192.168.48.203:8000"+parking.images[index].imgFile)
+                        println(URL+parking.images[index].imgFile)
                         AsyncImage(
                             model = URL+parking.images[index].imgFile,
                             contentScale = ContentScale.Crop,
@@ -403,6 +367,7 @@ fun parkingDetails(
                 }
             }
         }
+
         item {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -523,7 +488,11 @@ fun parkingDetails(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState
         ) {
-            searchParkingsForm()
+            searchParkingsForm(
+                parking = parking,
+                navController = navController,
+                createReservationViewModel = createReservationViewModel
+            )
         }
     }
 }
