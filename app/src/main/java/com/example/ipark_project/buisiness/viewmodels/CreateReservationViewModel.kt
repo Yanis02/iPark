@@ -36,7 +36,6 @@ class CreateReservationViewModel (private val reservationRepository: Reservation
                 )
                 if (response.isSuccessful) {
                     val data = response.body()
-                    Log.v("codee", data.toString())
                     if (data != null) {
                         reservation.value = data
                         //reservationRepository.deleteLocalReservations()

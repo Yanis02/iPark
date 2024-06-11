@@ -4,47 +4,27 @@ import com.example.ipark_project.buisiness.URL
 import com.example.ipark_project.buisiness.entities.User
 import okhttp3.OkHttpClient
 import retrofit2.Response
-import retrofit2.http.Field
-import retrofit2.http.POST
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
+import retrofit2.http.POST
 
-data class SignUpRequest(
-    val username: String,
-    val email: String,
-    val password: String,
-    val gender: String,
-    val location: String
-)
-
-data class SignInRequest(
-    val username: String,
-    val password: String,
-)
-
-data class SignInResponse(
+data class FcmRequest(
     val token: String
 )
+interface FcmEndpoint  {
 
+    @POST("api/users/update_fcm_token/")
+    suspend fun updateFcm(
+        @Body fcmRequest:FcmRequest
+    ): Response<String>
 
-interface AuthEndpoint : FcmEndpoint {
-
-    @POST("api/users/signup/")
-    suspend fun signUp(
-        @Body signUpRequest: SignUpRequest
-    ): Response<User>
-
-    @POST("api/users/signin/")
-    suspend fun signIn(
-        @Body signInRequest: SignInRequest
-    ): Response<SignInResponse>
 
     companion object {
 
-        private var endpoint: AuthEndpoint? = null
+        private var endpoint: FcmEndpoint? = null
 
-        fun create(): AuthEndpoint {
+        fun create(): FcmEndpoint {
             if (endpoint == null) {
                 val client = OkHttpClient.Builder()
                     .followRedirects(true) // Disable redirects
@@ -58,9 +38,5 @@ interface AuthEndpoint : FcmEndpoint {
             }
             return endpoint!!
         }
-    }
-
-    override suspend fun updateFcm(fcmRequest: FcmRequest): Response<String> {
-        TODO("Not yet implemented")
     }
 }
