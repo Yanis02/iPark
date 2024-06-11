@@ -1,6 +1,8 @@
 package com.example.ipark_project.presentation
 
+import android.app.VoiceInteractor
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -44,7 +46,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.ipark_project.R
+import com.example.ipark_project.buisiness.URL
+import com.example.ipark_project.buisiness.endpoints.AuthInterceptor
+import com.example.ipark_project.buisiness.endpoints.FcmEndpoint
+import com.example.ipark_project.buisiness.endpoints.ReservationEndpoint
 import com.example.ipark_project.buisiness.viewmodels.SignInUserViewModel
+import com.google.firebase.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import com.google.firebase.messaging.messaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 
 @Composable
 fun BorderedInputField(
@@ -219,6 +238,37 @@ fun SignIn(
                             signInUserViewModel.signInUser(
                                 username = username.value, password = password.value
                             )
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val token = FirebaseMessaging.getInstance().token.await()
+                                Log.d("djamel token", "fcm Token : $token")
+                                val url = URL+"api/users/update_fcm_token/"
+                                val json = JSONObject()
+                                json.put("token", token)
+                                val body = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+                                val client = OkHttpClient()
+                                val prefs = context.getSharedPreferences(
+                                    "user_prefs", Context.MODE_PRIVATE
+                                )
+                                val userAuthToken =
+                                    mutableStateOf(prefs.getString("token", "") ?: "")
+
+
+                                val request = Request.Builder()
+                                    .url(url)
+                                    .post(body)
+                                    .addHeader("Authorization", "Token $userAuthToken")
+                                    .build()
+
+                                client.newCall(request).execute().use { response ->
+                                    if (!response.isSuccessful) {
+                                        Log.e("FCM", "Failed to send token to server: ${response}")
+                                    } else {
+                                        Log.d("FCM", "Token sent to server successfully")
+                                    }
+                                }
+                            }
+
                         }
                     },
                     contentAlignment = Alignment.Center){

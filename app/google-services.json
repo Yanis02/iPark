@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1071468514082",
+    "project_id": "iparkproject-95f8b",
+    "storage_bucket": "iparkproject-95f8b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1071468514082:android:80a9c506433c6a1e1fb37b",
+        "android_client_info": {
+          "package_name": "com.example.ipark_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABDySnolC2VGzD0kk3uBsG4DV4dwsFgoE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

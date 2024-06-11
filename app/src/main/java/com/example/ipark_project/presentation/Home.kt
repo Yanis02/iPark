@@ -1,8 +1,10 @@
 package com.example.ipark_project.presentation
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Geocoder
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -45,17 +47,26 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.ipark_project.buisiness.URL
 import com.example.ipark_project.buisiness.viewmodels.ParkingsViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import java.util.Locale
 
 fun distanceBetween(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
@@ -69,10 +80,40 @@ fun distanceBetween(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Dou
     return earthRadius * c
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(navController: NavController, parkingsViewModel: ParkingsViewModel = viewModel()) {
+    val context=LocalContext.current
+    CoroutineScope(Dispatchers.IO).launch {
+        val token = FirebaseMessaging.getInstance().token.await()
+        Log.d("djamel token", "fcm Token : $token")
+        val url = URL +"api/users/update_fcm_token/"
+        val json = JSONObject()
+        json.put("token", token)
+        val body = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+        val client = OkHttpClient()
+        val prefs = context.getSharedPreferences(
+            "user_prefs", Context.MODE_PRIVATE
+        )
+        val userAuthToken =
+            prefs.getString("token", "") ?: ""
+        val request = Request.Builder()
+            .url(url)
+            .post(body)
+            .addHeader("Authorization", "Token $userAuthToken")
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) {
+                Log.e("FCM", "Failed to send token to server: ${response}")
+            } else {
+                Log.d("FCM", "Token sent to server successfully")
+            }
+        }
+    }
     var searchQuery by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
     var isMap by remember { mutableStateOf(true) }
@@ -88,7 +129,6 @@ fun HomePage(navController: NavController, parkingsViewModel: ParkingsViewModel 
     }
     println(parkings)
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
 
     val filteredParkings = searchResultCoordinates?.let { coords ->
         parkings?.filter { parking ->
