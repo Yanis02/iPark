@@ -123,6 +123,10 @@ fun HomePage(navController: NavController, parkingsViewModel: ParkingsViewModel 
         parkingsViewModel.getParkings()
     }
     val parkings by parkingsViewModel.parkings
+    if(parkingsViewModel.connectionError.value){
+        showToast("No connexion to the server", LocalContext.current)
+        parkingsViewModel.connectionError.value = false
+    }
     println(parkings)
     val coroutineScope = rememberCoroutineScope()
 

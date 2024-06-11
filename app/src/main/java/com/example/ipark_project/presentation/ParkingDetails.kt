@@ -110,6 +110,11 @@ fun searchParkingsForm(parking: Parking?, navController: NavController, createRe
         navController.navigate(Router.ReservationsScreen.route)
     }
 
+    if (createReservationViewModel.connectionError.value){
+        showToast("No connexion to the server", context)
+        createReservationViewModel.connectionError.value = false
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -304,7 +309,8 @@ fun searchParkingsForm(parking: Parking?, navController: NavController, createRe
                             entry_date = formattedEnteryDate,
                             entry_time = formattedEnteryTime,
                             exit_date = formattedExitDate,
-                            exit_time = formattedExitTime
+                            exit_time = formattedExitTime,
+                            context = applicationContext
                         )
                     }
                 },

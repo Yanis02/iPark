@@ -11,9 +11,12 @@ import kotlinx.coroutines.withContext
 import retrofit2.Response
 
 class ReservationRepository (
-    private val reservationEndpoint: ReservationEndpoint,
+    private var reservationEndpoint: ReservationEndpoint,
     private val reservationDao: ReservationDao
     ) {
+    fun updateEndpoint(token: String){
+        reservationEndpoint = ReservationEndpoint.create(token)
+    }
     suspend fun createReservation(
         parking : String,
         entry_date: String,

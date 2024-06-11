@@ -12,5 +12,6 @@ data class Reservation(
     val entry_time: String,
     val exit_date: String,
     val exit_time: String,
-    val qrcode: String
+    val qrcode: String,
+    val totalPaid: String
 )

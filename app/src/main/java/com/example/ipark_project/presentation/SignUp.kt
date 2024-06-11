@@ -70,6 +70,10 @@ fun SignUp(navController: NavController, signUpUserViewModel: SignUpUserViewMode
         gender.value = ""
         location.value = ""
     }
+    if (signUpUserViewModel.connectionError.value){
+        showToast("No connexion to the server", context)
+        signUpUserViewModel.connectionError.value = false
+    }
 
     Column(
         modifier = Modifier

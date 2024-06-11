@@ -43,6 +43,8 @@ import com.example.ipark_project.buisiness.viewmodels.SignUpUserViewModel
 import com.example.ipark_project.ui.theme.IPark_ProjectTheme
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -86,9 +88,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+    fun clearSharedPreferences(context: Context) {
+        // Get SharedPreferences instance
+        val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        // Edit SharedPreferences to clear the stored data
+        val editor = sharedPreferences.edit()
+        editor.clear()
+        editor.apply()
+    }
 
     @Composable
-    fun navigationBar(navController: NavController) {
+    fun navigationBar(navController: NavController, isConnected: MutableState<Boolean>) {
+        val context = LocalContext.current
         Row(
             modifier = Modifier
                 .padding(10.dp)
@@ -130,22 +141,14 @@ class MainActivity : ComponentActivity() {
                     }
                 )
                 BottomNavigationItem(
-                    selected = currentRoute == Router.NotificationsScreen.route,
-                    onClick = { navController.navigate(Router.NotificationsScreen.route) },
-                    icon = {
-                        Icon(
-                            imageVector = Icons.Filled.Notifications,
-                            contentDescription = "",
-                            tint = if (currentRoute == Router.NotificationsScreen.route) selectedColor else defaultColor
-                        )
-                    }
-                )
-                BottomNavigationItem(
                     selected = currentRoute == Router.ProfileScreen.route,
-                    onClick = { navController.navigate(Router.ProfileScreen.route) },
+                    onClick = {
+                        isConnected.value = false
+                        clearSharedPreferences(context)
+                    },
                     icon = {
                         Icon(
-                            imageVector = Icons.Filled.Person,
+                            imageVector = Icons.Filled.ExitToApp,
                             contentDescription = "",
                             tint = if (currentRoute == Router.ProfileScreen.route) selectedColor else defaultColor
                         )
@@ -228,7 +231,7 @@ fun root() {
         bottomBar = {
             if (isConnected.value) {
                 Row (modifier = Modifier.background(Color(0xFFEBEFF5))) {
-                    navigationBar(navController = navController)
+                    navigationBar(navController = navController, isConnected = isConnected)
 
                 }
             }
