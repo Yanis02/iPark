@@ -26,21 +26,17 @@ interface ReservationEndpoint {
 
     companion object {
 
-        private var endpoint: ReservationEndpoint? = null
-
         fun create(token: String): ReservationEndpoint {
-            if (endpoint == null) {
-                val client = OkHttpClient.Builder()
-                    .followRedirects(true)
-                    .addInterceptor(AuthInterceptor(token))
-                    .build()
-                endpoint = Retrofit.Builder()
-                    .baseUrl(URL)
-                    .client(client)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-                    .create(ReservationEndpoint::class.java)
-            }
+            val client = OkHttpClient.Builder()
+                .followRedirects(true)
+                .addInterceptor(AuthInterceptor(token))
+                .build()
+            val endpoint = Retrofit.Builder()
+                .baseUrl(URL)
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(ReservationEndpoint::class.java)
             return endpoint!!
         }
     }

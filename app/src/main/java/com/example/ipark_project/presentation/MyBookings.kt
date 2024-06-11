@@ -61,6 +61,7 @@ fun ExpandableCard(
     title: String,
     fromDate: String,
     toDate: String,
+    totalPaid: String,
     qrcode: String,
     titleFontSize: TextUnit = MaterialTheme.typography.h6.fontSize,
     titleFontWeight: FontWeight = FontWeight.Bold,
@@ -135,6 +136,13 @@ fun ExpandableCard(
                 ) {
                     Text(text = "To:", fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
                     Text(text = toDate, fontWeight = FontWeight.Light, fontSize = 18.sp)
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Text(text = "Total paid:", fontWeight = FontWeight.SemiBold, fontSize = 18.sp)
+                    Text(text = totalPaid, fontWeight = FontWeight.Light, fontSize = 18.sp)
                 }
                 if (qrcode.isNotEmpty()) {
                     val imageBytes = Base64.getDecoder().decode(qrcode)
@@ -213,7 +221,8 @@ fun myBookings(myBookingViewModel: MyBookingViewModel) {
                     title = reservation.parking,
                     fromDate = reservation.entry_date,
                     toDate = reservation.exit_date,
-                    qrcode = reservation.qrcode
+                    qrcode = reservation.qrcode,
+                    totalPaid = reservation.totalPaid
                 )
             }
         }
@@ -229,7 +238,8 @@ fun ExpandableCardPreview() {
         title = "Parking du nord",
         fromDate = "18/05/2024 20:04",
         toDate = "18/05/2024 20:04",
-        qrcode = ""
+        qrcode = "",
+        totalPaid = "222"
 
     )
 }

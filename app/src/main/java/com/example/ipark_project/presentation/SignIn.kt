@@ -141,6 +141,11 @@ fun SignIn(
         navController.navigate(Router.HomeScreen.route)
     }
 
+    if (signInUserViewModel.connectionError.value){
+        showToast("No connexion to the server", context)
+        signInUserViewModel.connectionError.value = false
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize(),
